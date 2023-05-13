@@ -62,6 +62,7 @@ def graph_2():
     fig6 = px.area(acc_mode, x='YEAR', y=['Total'], title='Average accident yearly')
     mean_accidents = acc_mode['Total'].mean()
     fig6.add_annotation(xref='paper', yref='paper', x=0.1, y=1, text=f"Average accidents year-wise = {mean_accidents:.0f}",showarrow=False)
+    
     return render_template('graph2.html', fig4=fig4.to_html(), fig5=fig5.to_html(), fig6=fig6.to_html())
 
 def load_accident_data():
@@ -138,6 +139,28 @@ def graph_4():
     mean_accidents = load_accident_data['Total Injured'].mean()
     fig10.add_annotation(xref='paper', yref='paper', x=0.1, y=1, text=f"Average Injuries per year = {mean_accidents:.0f}",showarrow=False)
     render_template('graph4.html', fig10=fig10.to_html())
+
+def load_month_data():
+    month_wise = pd.read_csv('Dataset/only_road_accidents_data_month2.csv')
+    return month_wise
+
+@app.route('/graph/10')
+def graph_10():
+    month_wise = load_month_data()
+    grouped_obj = month_wise.groupby(["YEAR"]).sum()
+    grouped_obj.drop(['TOTAL'], axis=1, inplace=True)
+    month = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER','NOVEMBER', 'DECEMBER']
+    fig28 = px.area(grouped_obj, x=grouped_obj.index, y=month, title='Accident YEAR-wise')
+    conclusion = 'The graph shows accidents monthly.'
+    fig28.add_annotation(text=conclusion, xref='paper', yref='paper', x=.5, y=1, bgcolor='grey', showarrow=False, font=dict(size=12))
+
+    grouped_obj = month_wise.groupby(['TOTAL']).sum()
+    grouped_obj.drop(['YEAR'], axis=1, inplace=True)
+    fig29 = px.scatter(grouped_obj, x='TOTAL', y=['JANUARY','FEBRUARY','MARCH'], title='Accidents in First Quarter', trendline='ols', log_x=True)
+
+    fig30 = px.scatter(grouped_obj, x='TOTAL', y=['APRIL','MAY','JUNE'], title='Accidents in Second Quarter', trendline='ols', log_y=True)
+
+    return render_template('graph10.html', fig28=fig28.to_html(), fig29=fig29.to_html(), fig30=fig30.to_html())
 
 if(__name__ == '__main__'):
     app.run(host='0.0.0.0', port=8080, debug=True)
