@@ -85,27 +85,6 @@ def load_accident_data():
     'Number of Persons Injured Per Ten Thousand Kms of Roads':'Injured Per 10K KM Road'}, inplace=True)
     return accident_data
 
-
-#load_accident_data.drop(columns=['Unnamed: 0'], inplace=True)
-
-import re
-def clean_numerical_columns(value):
-    if isinstance(value, str):
-        if value.count('.') == 0:
-            value = re.sub(r'[^0-9]+', '', value)
-            value = int(value) if value else np.nan
-        else:
-            value = re.sub(r'[^0-9.]+', '', value)
-            value = float(value) if value else np.nan
-        return value
-    print(value)
-    return np.nan
-
-for col in load_accident_data.select_dtypes(include=['object']).columns:
-    load_accident_data[col] = load_accident_data[col].apply(clean_numerical_columns)
-
-#load_accident_data.drop(index = load_accident_data[load_accident_data['Year'] == 1].index, inplace=True)
-
 @app.route('/graph/3')
 def graph_3():
     accident_data = load_accident_data()
