@@ -158,6 +158,8 @@ def graph_10():
     grouped_obj.drop(['YEAR'], axis=1, inplace=True)
     fig29 = px.scatter(grouped_obj, x='TOTAL', y=['JANUARY','FEBRUARY','MARCH'], title='Accidents in First Quarter', trendline='ols', log_x=True)
 
+    grouped_obj = month_wise.groupby(['TOTAL']).sum()
+    grouped_obj.drop(['YEAR'], axis=1, inplace=True)
     fig30 = px.scatter(grouped_obj, x='TOTAL', y=['APRIL','MAY','JUNE'], title='Accidents in Second Quarter', trendline='ols', log_y=True)
 
     return render_template('graph10.html', fig28=fig28.to_html(), fig29=fig29.to_html(), fig30=fig30.to_html())
