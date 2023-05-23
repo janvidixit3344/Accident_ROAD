@@ -65,6 +65,19 @@ def graph_2():
     
     return render_template('graph2.html', fig4=fig4.to_html(), fig5=fig5.to_html(), fig6=fig6.to_html())
 
+import re
+def clean_numerical_columns(value):
+    if isinstance(value, str):
+        if value.count('.') == 0:
+            value = re.sub(r'[^0-9]+', '', value)
+            value = int(value) if value else np.nan
+        else:
+            value = re.sub(r'[^0-9.]+', '', value)
+            value = float(value) if value else np.nan
+        return value
+    print(value)
+    return np.nan
+
 def load_accident_data():
     accident_data = pd.read_csv('Dataset/accidient_data_of_india.csv')
     accident_data.rename(columns={
@@ -84,6 +97,9 @@ def load_accident_data():
     'Number of Persons Injured per Lakh Population':'Injured Per Lakh',
     'Number of Persons Injured Per Ten Thousand Vehicles':'Injured Per 10K Vehicles',
     'Number of Persons Injured Per Ten Thousand Kms of Roads':'Injured Per 10K KM Road'}, inplace=True)
+    for col in accident_data.select_dtypes(include=['object']).columns:
+        accident_data[col] = accident_data[col].apply(clean_numerical_columns)
+    accident_data.drop(index = accident_data[accident_data['Year'] == 1].index, inplace=True)   
     return accident_data
 
 @app.route('/graph/3')
@@ -107,7 +123,45 @@ def graph_3():
     fig9.add_scatter(x=accident_data['Year'], y=accident_data['Total Injured'], mode='markers', name='Injured', marker=dict(color='red', size=10))
     mean_accidents = accident_data['Total Injured'].mean()
     fig9.add_annotation(xref='paper', yref='paper', x=0.1, y=1, text=f"Average Injuries per year = {mean_accidents:.0f}",showarrow=False)
-    render_template('graph3.html', fig7=fig7.to_html(), fig8=fig8.to_html(), fig9=fig9.to_html())
+    return render_template('graph3.html', fig7=fig7.to_html(), fig8=fig8.to_html(), fig9=fig9.to_html())
+
+
+import re
+def clean_numerical_columns(value):
+    if isinstance(value, str):
+        if value.count('.') == 0:
+            value = re.sub(r'[^0-9]+', '', value)
+            value = int(value) if value else np.nan
+        else:
+            value = re.sub(r'[^0-9.]+', '', value)
+            value = float(value) if value else np.nan
+        return value
+    print(value)
+    return np.nan
+
+def load_accident_data():
+    accident_data = pd.read_csv('Dataset/accidient_data_of_india.csv')
+    accident_data.rename(columns={
+    'Years':'Year',
+    'Total Number of Road Accidents (in numbers)':'Total accidents',
+    'Total Number of Persons Killed (in numbers)':'Total Killed',
+    'Total Number of Persons Injured (in numbers)':'Total Injured',
+    'Population of India (in thousands)':'Total Population',
+    'Total Number of Registered Motor Vehicles (in thousands)':'Total Registered Vehicle',
+    'Road Length (in kms)':'Road Length',
+    'Number of Accidents per Lakh Population':'Accidents Per Lakh',
+    'Number of Accidents per Ten Thousand Vehicles':'Accidents Per 10K Vehicles',
+    'Number of Accidents per Ten Thousand Kms of Roads':'Accidents Per 10K KM Road',
+    'Number of Persons Killed Per Lakh Population':'Killed Per Lakh',
+    'Number of Persons Killed Per Ten Thousand Vehicles':'Killed Per 10K Vehicles',
+    'Number of Persons Killed per Ten Thousand Kms of Roads':'Killed Per 10K KM Road',
+    'Number of Persons Injured per Lakh Population':'Injured Per Lakh',
+    'Number of Persons Injured Per Ten Thousand Vehicles':'Injured Per 10K Vehicles',
+    'Number of Persons Injured Per Ten Thousand Kms of Roads':'Injured Per 10K KM Road'}, inplace=True)
+    for col in accident_data.select_dtypes(include=['object']).columns:
+        accident_data[col] = accident_data[col].apply(clean_numerical_columns)
+    accident_data.drop(index = accident_data[accident_data['Year'] == 1].index, inplace=True)   
+    return accident_data
 
 @app.route('/graph/4')
 def graph_4():
@@ -132,7 +186,7 @@ def graph_4():
         'Number of Persons Injured Per Ten Thousand Kms of Roads':'Injured Per 10K KM Road'}, inplace=True)
     accident_data = load_accident_data()
 
-    grouped_obj = load_accident_data.groupby(['Year']).sum()
+    grouped_obj = accident_data.groupby(['Year']).sum()
     # injuries due to accidents
     fig10 = px.area(load_accident_data, x='Year', y=['Total Injured','Total accidents'], title='Total injuries due to accidents per year')
     fig10.add_scatter(x=load_accident_data['Year'], y=load_accident_data['Total Injured'], mode='markers', name='Injured', marker=dict(color='indigo', size=10))
