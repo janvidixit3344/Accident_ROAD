@@ -26,16 +26,17 @@ def graph_1():
     fig1 = px.area(grouped_obj, x=grouped_obj.index, y='Total', title='Accident year-wise')
     conclusion = 'The graph shows the accidents yearly.'
     fig1.add_annotation(text=conclusion, xref='paper', yref='paper', x=.5, y=1, bgcolor='grey', showarrow=False, font=dict(size=12))
-
+ 
     # STATE-WISE DATA 
     grouped_obj = acc_mode.groupby(["STATE/UT"]).sum()
     grouped_obj.drop(['YEAR'], axis=1, inplace=True)
     grouped_obj
     # accidents state-wise
+    # accidents state-wise
     fig2 = px.area(grouped_obj, x=grouped_obj.index, y='Total', title='Accident year-wise')
     conclusion = 'The graph shows accidents from every State and UT.'
     fig2.add_annotation(text=conclusion, xref='paper', yref='paper', x=.5, y=1, bgcolor='grey', showarrow=False, font=dict(size=12))
-    
+
     # VEHCILE INVOLVEMENT DATA 
     grouped_obj = acc_mode.groupby(["VEHICLE USED"]).sum()
     grouped_obj.drop(['YEAR'], axis=1, inplace=True)
@@ -46,10 +47,6 @@ def graph_1():
     conclusion = 'The graph shows that accidents due to vehicles involved.'
     fig3.add_annotation(text=conclusion, xref='paper', yref='paper', x=.5, y=1, bgcolor='grey', showarrow=False, font=dict(size=12))
 
-    return render_template('graph1.html', fig1=fig1.to_html(),fig2=fig2.to_html(), fig3=fig3.to_html())
-
-@app.route('/graph/2')
-def graph_2():
     acc_mode = load_acc_data()
     fig4 = px.area(acc_mode, x='VEHICLE USED', y=['Total'], title='Average accident state-wise')
     mean_accidents = acc_mode['Total'].mean()
@@ -63,7 +60,7 @@ def graph_2():
     mean_accidents = acc_mode['Total'].mean()
     fig6.add_annotation(xref='paper', yref='paper', x=0.1, y=1, text=f"Average accidents year-wise = {mean_accidents:.0f}",showarrow=False)
     
-    return render_template('graph2.html', fig4=fig4.to_html(), fig5=fig5.to_html(), fig6=fig6.to_html())
+    return render_template('graph1.html', fig1=fig1.to_html(), f2=fig2.to_html(), fig3=fig3.to_html(), fig4=fig4.to_html(), fig5=fig5.to_html(), fig6=fig6.to_html())
 
 import re
 def clean_numerical_columns(value):
@@ -102,7 +99,7 @@ def load_accident_data():
     accident_data.drop(index = accident_data[accident_data['Year'] == 1].index, inplace=True)   
     return accident_data
 
-@app.route('/graph/3')
+@app.route('/graph/2')
 def graph_3():
     accident_data = load_accident_data()
     
@@ -123,76 +120,46 @@ def graph_3():
     fig9.add_scatter(x=accident_data['Year'], y=accident_data['Total Injured'], mode='markers', name='Injured', marker=dict(color='red', size=10))
     mean_accidents = accident_data['Total Injured'].mean()
     fig9.add_annotation(xref='paper', yref='paper', x=0.1, y=1, text=f"Average Injuries per year = {mean_accidents:.0f}",showarrow=False)
-    return render_template('graph3.html', fig7=fig7.to_html(), fig8=fig8.to_html(), fig9=fig9.to_html())
-
-
-import re
-def clean_numerical_columns(value):
-    if isinstance(value, str):
-        if value.count('.') == 0:
-            value = re.sub(r'[^0-9]+', '', value)
-            value = int(value) if value else np.nan
-        else:
-            value = re.sub(r'[^0-9.]+', '', value)
-            value = float(value) if value else np.nan
-        return value
-    print(value)
-    return np.nan
-
-def load_accident_data():
-    accident_data = pd.read_csv('Dataset/accidient_data_of_india.csv')
-    accident_data.rename(columns={
-    'Years':'Year',
-    'Total Number of Road Accidents (in numbers)':'Total accidents',
-    'Total Number of Persons Killed (in numbers)':'Total Killed',
-    'Total Number of Persons Injured (in numbers)':'Total Injured',
-    'Population of India (in thousands)':'Total Population',
-    'Total Number of Registered Motor Vehicles (in thousands)':'Total Registered Vehicle',
-    'Road Length (in kms)':'Road Length',
-    'Number of Accidents per Lakh Population':'Accidents Per Lakh',
-    'Number of Accidents per Ten Thousand Vehicles':'Accidents Per 10K Vehicles',
-    'Number of Accidents per Ten Thousand Kms of Roads':'Accidents Per 10K KM Road',
-    'Number of Persons Killed Per Lakh Population':'Killed Per Lakh',
-    'Number of Persons Killed Per Ten Thousand Vehicles':'Killed Per 10K Vehicles',
-    'Number of Persons Killed per Ten Thousand Kms of Roads':'Killed Per 10K KM Road',
-    'Number of Persons Injured per Lakh Population':'Injured Per Lakh',
-    'Number of Persons Injured Per Ten Thousand Vehicles':'Injured Per 10K Vehicles',
-    'Number of Persons Injured Per Ten Thousand Kms of Roads':'Injured Per 10K KM Road'}, inplace=True)
-    for col in accident_data.select_dtypes(include=['object']).columns:
-        accident_data[col] = accident_data[col].apply(clean_numerical_columns)
-    accident_data.drop(index = accident_data[accident_data['Year'] == 1].index, inplace=True)   
-    return accident_data
-
-@app.route('/graph/4')
-def graph_4():
-    def load_accident_data():
-        accident_data = pd.read_csv('Dataset/accidient_data_of_india.csv')
-        accident_data.rename(columns={
-        'Years':'Year',
-        'Total Number of Road Accidents (in numbers)':'Total accidents',
-        'Total Number of Persons Killed (in numbers)':'Total Killed',
-        'Total Number of Persons Injured (in numbers)':'Total Injured',
-        'Population of India (in thousands)':'Total Population',
-        'Total Number of Registered Motor Vehicles (in thousands)':'Total Registered Vehicle',
-        'Road Length (in kms)':'Road Length',
-        'Number of Accidents per Lakh Population':'Accidents Per Lakh',
-        'Number of Accidents per Ten Thousand Vehicles':'Accidents Per 10K Vehicles',
-        'Number of Accidents per Ten Thousand Kms of Roads':'Accidents Per 10K KM Road',
-        'Number of Persons Killed Per Lakh Population':'Killed Per Lakh',
-        'Number of Persons Killed Per Ten Thousand Vehicles':'Killed Per 10K Vehicles',
-        'Number of Persons Killed per Ten Thousand Kms of Roads':'Killed Per 10K KM Road',
-        'Number of Persons Injured per Lakh Population':'Injured Per Lakh',
-        'Number of Persons Injured Per Ten Thousand Vehicles':'Injured Per 10K Vehicles',
-        'Number of Persons Injured Per Ten Thousand Kms of Roads':'Injured Per 10K KM Road'}, inplace=True)
-    accident_data = load_accident_data()
-
+    
     grouped_obj = accident_data.groupby(['Year']).sum()
-    # injuries due to accidents
-    fig10 = px.area(load_accident_data, x='Year', y=['Total Injured','Total accidents'], title='Total injuries due to accidents per year')
-    fig10.add_scatter(x=load_accident_data['Year'], y=load_accident_data['Total Injured'], mode='markers', name='Injured', marker=dict(color='indigo', size=10))
-    mean_accidents = load_accident_data['Total Injured'].mean()
+    grouped_obj
+
+    fig10 = px.area(accident_data, x='Year', y=['Total Injured','Total accidents'], title='Total injuries due to accidents per year')
+    fig10.add_scatter(x=accident_data['Year'], y=accident_data['Total Injured'], mode='markers', name='Injured', marker=dict(color='indigo', size=10))
+    mean_accidents = accident_data['Total Injured'].mean()
     fig10.add_annotation(xref='paper', yref='paper', x=0.1, y=1, text=f"Average Injuries per year = {mean_accidents:.0f}",showarrow=False)
-    render_template('graph4.html', fig10=fig10.to_html())
+
+    fig11 = px.area(accident_data, x='Year', y=['Total Killed','Total accidents'], title='Total Killed per year')
+    fig11.add_scatter(x=accident_data['Year'], y=accident_data['Total Killed'], mode='markers', name='Killed', marker=dict(color='blue', size=10))
+    mean_accidents = accident_data['Total Killed'].mean()
+    fig11.add_annotation(xref='paper', yref='paper', x=0.1, y=1, text=f"Average Killed per year = {mean_accidents:.0f}",showarrow=False)
+
+    fig12 = px.area(accident_data, x='Year', y=['Total accidents','Total Population'], title='Accidents out of total population per year')
+    fig12.add_scatter(x=accident_data['Year'], y=accident_data['Total accidents'], mode='markers', name='Accidents', marker=dict(color='grey', size=10))
+    mean_accidents = accident_data['Total accidents'].mean()
+    fig12.add_annotation(xref='paper', yref='paper', x=0.1, y=1, text=f"Accidents out of total population = {mean_accidents:.0f}",showarrow=False)
+    
+    fig13 = px.sunburst(accident_data, path=['Year', 'Total accidents'], values='Total accidents', title='Total accidents per year')
+
+    fig14 = px.sunburst(accident_data, path=['Year', 'Total Killed'], values='Total Killed', title='Total Killed per year')
+
+    fig15 = px.sunburst(accident_data, path=['Year', 'Total Injured'], values='Total Injured', title='Total Injured per year')
+
+    fig16 = px.sunburst(accident_data, path=['Year', 'Total Registered Vehicle'], values='Total Registered Vehicle', title='Total Registered Vehicle per year')
+
+    fig17 = px.pie(accident_data, values='Total Injured', names='Year', title='Total accidents per year')
+
+    fig18 = px.pie(accident_data, values='Total Killed', names='Year', title='Total Killed per year')
+
+    fig19 = px.pie(accident_data, values='Total Registered Vehicle', names='Year', title='Total Registered Vehicles per year')
+
+    fig20 = px.treemap(accident_data, path=['Year', 'Total accidents'], values='Total accidents', title='Total accidents per year')
+
+    return render_template('graph2.html', fig7=fig7.to_html(), fig8=fig8.to_html(), fig9=fig9.to_html(),
+                           fig10=fig10.to_html(), fig11=fig11.to_html(), fig12=fig12.to_html(), fig13=fig13.to_html(),
+                            fig14=fig14.to_html(), fig15=fig15.to_html(), fig16=fig16.to_html(), fig17=fig17.to_html(),
+                            fig18=fig18.to_html(), fig19=fig19.to_html(), fig20=fig20.to_html())
+
 
 def load_month_data():
     month_wise = pd.read_csv('Dataset/only_road_accidents_data_month2.csv')
