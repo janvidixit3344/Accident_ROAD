@@ -151,7 +151,7 @@ def graph_2():
 
     fig18 = px.pie(accident_data, values='Total Killed', names='Year', title='Total Killed per year')
 
-    fig19 = px.pie(accident_data, values='Total Registered Vehicle', names='Year', title='Total Registered Vehicles per year')
+    fig19 = px.pie(accident_data, values='Total Injured', names='Year', title='Total Injured per year')
 
     fig20 = px.treemap(accident_data, path=['Year', 'Total accidents'], values='Total accidents', title='Total accidents per year')
 
@@ -245,7 +245,6 @@ def graph_4():
     conclusion = 'The graph shows accidents monthly.'
     fig27.add_annotation(text=conclusion, xref='paper', yref='paper', x=.5, y=1, bgcolor='grey', showarrow=False, font=dict(size=12))
 
-    month_wise = load_month_data()
     grouped_obj = month_wise.groupby(['TOTAL']).sum()
     grouped_obj.drop(['YEAR'], axis=1, inplace=True)
     grouped_obj
