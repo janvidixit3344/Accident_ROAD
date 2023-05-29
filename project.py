@@ -16,7 +16,7 @@ def load_acc_data():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('card.html')
 
 @app.route('/graph/1')
 def graph_1():
