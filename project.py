@@ -16,6 +16,10 @@ def load_acc_data():
 
 @app.route('/')
 def index():
+    return render_template('index.html')
+
+@app.route('/card')
+def card():
     return render_template('card.html')
 
 @app.route('/graph/1')
@@ -37,7 +41,7 @@ def graph_1():
     conclusion = 'The graph shows accidents from every State and UT.'
     fig2.add_annotation(text=conclusion, xref='paper', yref='paper', x=.5, y=1, bgcolor='grey', showarrow=False, font=dict(size=12))
 
-    # VEHCILE INVOLVEMENT DATA 
+    # VEHCILE INVOLVEMENT DATA
     grouped_obj = acc_mode.groupby(["VEHICLE USED"]).sum()
     grouped_obj.drop(['YEAR'], axis=1, inplace=True)
     grouped_obj
@@ -60,7 +64,7 @@ def graph_1():
     mean_accidents = acc_mode['Total'].mean()
     fig6.add_annotation(xref='paper', yref='paper', x=0.1, y=1, text=f"Average accidents year-wise = {mean_accidents:.0f}",showarrow=False)
     
-    return render_template('graph1.html', fig1=fig1.to_html(), f2=fig2.to_html(), fig3=fig3.to_html(), fig4=fig4.to_html(), fig5=fig5.to_html(), fig6=fig6.to_html())
+    return render_template('graph1.html', fig1=fig1.to_html(), fig2=fig2.to_html(), fig3=fig3.to_html(), fig4=fig4.to_html(), fig5=fig5.to_html(), fig6=fig6.to_html())
 
 import re
 def clean_numerical_columns(value):
@@ -238,16 +242,17 @@ def load_month_data():
 def graph_4():
     month_wise = load_month_data()
     grouped_obj = month_wise.groupby(["YEAR"]).sum()
-    grouped_obj.drop(['TOTAL'], axis=1, inplace=True)
+    # grouped_obj.drop(['TOTAL'], axis=1, inplace=True)
     grouped_obj
     month = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER','NOVEMBER', 'DECEMBER']
     fig27 = px.area(grouped_obj, x=grouped_obj.index, y=month, title='Accident YEAR-wise')
     conclusion = 'The graph shows accidents monthly.'
     fig27.add_annotation(text=conclusion, xref='paper', yref='paper', x=.5, y=1, bgcolor='grey', showarrow=False, font=dict(size=12))
 
-    grouped_obj = month_wise.groupby(['TOTAL']).sum()
-    grouped_obj.drop(['YEAR'], axis=1, inplace=True)
-    grouped_obj
+    gototal = month_wise.groupby(['TOTAL']).sum()
+    # grouped_obj.drop(['YEAR'], axis=1, inplace=True)
+    
+    print(grouped_obj.columns)
     fig28 = px.scatter(grouped_obj, x='TOTAL', y=['JANUARY','FEBRUARY','MARCH'], title='Accidents in First Quarter', trendline='ols', log_x=True)
 
     fig29 = px.scatter(grouped_obj, x='TOTAL', y=['APRIL','MAY','JUNE'], title='Accidents in Second Quarter', trendline='ols', log_y=True)
